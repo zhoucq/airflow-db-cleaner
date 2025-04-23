@@ -34,8 +34,26 @@ go get github.com/zhoucq/airflow-db-cleaner
 ## 构建
 
 ```bash
-go build -o airflow-db-cleaner ./cmd/airflow-db-cleaner
+# 构建当前平台版本
+make build
+
+# 构建 Linux x86_64 版本
+make build-linux
+
+# 同时构建多个平台版本
+make build-all
+
+# 带版本信息的构建
+make build-release
 ```
+
+## 跨平台支持
+
+本工具支持在不同平台上构建和运行：
+
+- 可以在 Mac ARM (M系列芯片) 上开发
+- 可以为 Linux x86_64 服务器构建二进制文件
+- 使用 `make build-linux` 命令可以直接生成 Linux 版本
 
 ## 许可证
 
