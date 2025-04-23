@@ -1,0 +1,35 @@
+# Airflow数据库配置
+database:
+  host: localhost
+  port: 3306
+  user: airflow
+  password: airflow
+  name: airflow
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 1h
+
+# 清理策略配置
+cleaner:
+  # 保留天数，超过此天数的记录将被清除
+  retention_days:
+    dag_run: 90        # DAG运行记录保留90天
+    task_instance: 90  # 任务实例保留90天
+    xcom: 90           # XCom数据保留90天
+    log: 30            # 日志保留30天
+    job: 30            # Job记录保留30天
+    
+  # 批处理配置
+  batch_size: 1000     # 每批处理的记录数
+  sleep_between_batches: 5s  # 批次间隔时间，避免对数据库造成过大压力
+  
+  # 是否执行实际删除操作，设为false时只会显示将被删除的记录数量
+  dry_run: true
+  
+  # 是否启用详细日志
+  verbose: false
+
+# 日志配置
+log:
+  level: info  # 日志级别: debug, info, warn, error
+  file: ""     # 日志文件路径，为空则输出到标准输出 
