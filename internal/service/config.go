@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// AppConfig 存储应用配置
+// AppConfig stores application configuration
 type AppConfig struct {
 	Database struct {
 		Host            string        `yaml:"host"`
@@ -45,19 +45,19 @@ type AppConfig struct {
 	} `yaml:"log"`
 }
 
-// LoadConfig 从文件中加载配置
+// LoadConfig loads configuration from file
 func LoadConfig(configPath string) (*AppConfig, error) {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("读取配置文件失败: %w", err)
+		return nil, fmt.Errorf("failed to read configuration file: %w", err)
 	}
 
 	var config AppConfig
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("解析配置文件失败: %w", err)
+		return nil, fmt.Errorf("failed to parse configuration file: %w", err)
 	}
 
-	// 设置默认值
+	// Set default values
 	if config.Cleaner.BatchSize <= 0 {
 		config.Cleaner.BatchSize = 1000
 	}
@@ -68,7 +68,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 	return &config, nil
 }
 
-// GetDatabaseConfig 提取数据库配置
+// GetDatabaseConfig extracts database configuration
 func (c *AppConfig) GetDatabaseConfig() database.Config {
 	return database.Config{
 		Host:            c.Database.Host,
@@ -83,7 +83,7 @@ func (c *AppConfig) GetDatabaseConfig() database.Config {
 	}
 }
 
-// GetCleanerConfig 提取清理配置
+// GetCleanerConfig extracts cleaner configuration
 func (c *AppConfig) GetCleanerConfig() models.Config {
 	return models.Config{
 		RetentionDays: map[string]int{

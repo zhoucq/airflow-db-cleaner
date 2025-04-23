@@ -1,4 +1,4 @@
-# Airflow数据库配置
+# Airflow database configuration
 database:
   host: 127.0.0.1
   port: 3306
@@ -8,30 +8,30 @@ database:
   max_idle_conns: 10
   max_open_conns: 100
   conn_max_lifetime: 1h
-  # 模拟模式，不实际连接数据库
+  # Mock mode, does not actually connect to the database
   mock: true
 
-# 清理策略配置
+# Cleaning strategy configuration
 cleaner:
-  # 保留天数，超过此天数的记录将被清除
+  # Retention days, records older than these days will be cleaned
   retention_days:
-    dag_run: 14        # DAG运行记录保留14天
-    task_instance: 14  # 任务实例保留14天
-    xcom: 14           # XCom数据保留14天
-    log: 7             # 日志保留7天
-    job: 7             # Job记录保留7天
+    dag_run: 14        # DAG run records retained for 14 days
+    task_instance: 14  # Task instances retained for 14 days
+    xcom: 14           # XCom data retained for 14 days
+    log: 7             # Logs retained for 7 days
+    job: 7             # Job records retained for 7 days
     
-  # 批处理配置
-  batch_size: 1000     # 每批处理的记录数
-  sleep_seconds: 5     # 批次间隔时间(秒)，避免对数据库造成过大压力
+  # Batch processing configuration
+  batch_size: 1000     # Number of records processed per batch
+  sleep_seconds: 5     # Interval time between batches (seconds), to avoid excessive pressure on the database
   
-  # 是否执行实际删除操作，设为false时只会显示将被删除的记录数量
+  # Whether to perform actual delete operations, set to false to only display the number of records to be deleted
   dry_run: false
   
-  # 是否启用详细日志
+  # Whether to enable detailed logs
   verbose: false
 
-# 日志配置
+# Log configuration
 log:
-  level: info  # 日志级别: debug, info, warn, error
-  file: ""     # 日志文件路径，为空则输出到标准输出 
+  level: info  # Log level: debug, info, warn, error
+  file: ""     # Log file path, empty for standard output 

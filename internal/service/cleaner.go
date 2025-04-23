@@ -9,13 +9,13 @@ import (
 	"github.com/zhoucq/airflow-db-cleaner/internal/models"
 )
 
-// Cleaner 负责清理过期数据
+// Cleaner responsible for cleaning expired data
 type Cleaner struct {
 	db     *database.DB
 	config models.Config
 }
 
-// NewCleaner 创建新的清理器
+// NewCleaner creates a new cleaner
 func NewCleaner(db *database.DB, config models.Config) *Cleaner {
 	return &Cleaner{
 		db:     db,
@@ -23,9 +23,9 @@ func NewCleaner(db *database.DB, config models.Config) *Cleaner {
 	}
 }
 
-// CleanAll 清理所有配置的表
+// CleanAll cleans all configured tables
 func (c *Cleaner) CleanAll() error {
-	// 准备清理表的配置
+	// Prepare table configurations for cleaning
 	tables := []models.TableConfig{
 		{TableName: "dag_run", RetentionDays: c.config.RetentionDays["dag_run"], DateColumn: "execution_date"},
 		{TableName: "task_instance", RetentionDays: c.config.RetentionDays["task_instance"], DateColumn: "start_date"},
@@ -34,23 +34,23 @@ func (c *Cleaner) CleanAll() error {
 		{TableName: "job", RetentionDays: c.config.RetentionDays["job"], DateColumn: "end_date"},
 	}
 
-	// 遍历并清理每个表
+	// Iterate and clean each table
 	for _, table := range tables {
 		if err := c.cleanTable(table); err != nil {
-			return fmt.Errorf("清理表 %s 失败: %w", table.TableName, err)
+			return fmt.Errorf("failed to clean table %s: %w", table.TableName, err)
 		}
 	}
 
 	return nil
 }
 
-// cleanTable 清理指定表的过期数据
+// cleanTable cleans expired data from the specified table
 func (c *Cleaner) cleanTable(table models.TableConfig) error {
-	// 计算截止日期
+	// Calculate cutoff date
 	cutoffDate := time.Now().AddDate(0, 0, -table.RetentionDays)
-	log.Printf("准备清理表 %s 中早于 %s 的数据", table.TableName, cutoffDate.Format("2006-01-02"))
+	log.Printf("Preparing to clean table %s with data earlier than %s", table.TableName, cutoffDate.Format("2006-01-02"))
 
-	// 确保日期列存在
+	// Ensure date column exists
 	var columnExists int
 	checkColumnSQL := fmt.Sprintf(`
 		SELECT COUNT(*) 
@@ -61,43 +61,43 @@ func (c *Cleaner) cleanTable(table models.TableConfig) error {
 	`, table.TableName, table.DateColumn)
 
 	if err := c.db.Get(&columnExists, checkColumnSQL); err != nil {
-		return fmt.Errorf("检查列是否存在失败: %w", err)
+		return fmt.Errorf("failed to check if column exists: %w", err)
 	}
 
 	if columnExists == 0 {
-		log.Printf("警告: 表 %s 中不存在列 %s，跳过此表", table.TableName, table.DateColumn)
+		log.Printf("Warning: Column %s does not exist in table %s, skipping this table", table.DateColumn, table.TableName)
 		return nil
 	}
 
-	// 先获取符合条件的记录数
+	// First get the number of records that match the condition
 	var count int
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM `%s` WHERE `%s` < ?", table.TableName, table.DateColumn)
 	if err := c.db.Get(&count, countQuery, cutoffDate); err != nil {
-		return fmt.Errorf("获取记录数失败: %w", err)
+		return fmt.Errorf("failed to get record count: %w", err)
 	}
 
-	log.Printf("将清理表 %s 中的 %d 条记录", table.TableName, count)
+	log.Printf("Will clean %d records from table %s", count, table.TableName)
 
-	// 如果是演习模式，到此结束
+	// If in dry run mode, stop here
 	if c.config.DryRun {
-		log.Printf("干运行模式: 不执行实际删除操作")
+		log.Printf("Dry run mode: No actual deletion operations will be performed")
 		return nil
 	}
 
-	// 如果没有记录需要清理，直接返回
+	// If there are no records to clean, return directly
 	if count == 0 {
-		log.Printf("表 %s 中没有过期记录需要清理", table.TableName)
+		log.Printf("No expired records need to be cleaned in table %s", table.TableName)
 		return nil
 	}
 
-	// 分批删除数据
+	// Delete data in batches
 	var deleted int
 	batchSize := c.config.BatchSize
 	sleepDuration := time.Duration(c.config.SleepSeconds) * time.Second
 
-	// 使用简单的批量删除方式
+	// Use simple batch deletion method
 	for deleted < count {
-		// 计算本次批次要删除的记录数
+		// Calculate the number of records to delete in this batch
 		currentBatchSize := batchSize
 		if count-deleted < batchSize {
 			currentBatchSize = count - deleted
@@ -108,21 +108,21 @@ func (c *Cleaner) cleanTable(table models.TableConfig) error {
 
 		result, err := c.db.Exec(deleteSQL, cutoffDate)
 		if err != nil {
-			return fmt.Errorf("删除记录失败: %w", err)
+			return fmt.Errorf("failed to delete records: %w", err)
 		}
 
 		rowsAffected, _ := result.RowsAffected()
 		deleted += int(rowsAffected)
 
-		log.Printf("已删除表 %s 中的 %d/%d 条记录", table.TableName, deleted, count)
+		log.Printf("Deleted %d/%d records from table %s", deleted, count, table.TableName)
 
-		// 如果没有删除完，休眠一段时间减轻数据库压力
+		// If not finished deleting, sleep to reduce database pressure
 		if deleted < count {
-			log.Printf("休眠 %v 秒后继续删除...", sleepDuration.Seconds())
+			log.Printf("Sleeping for %v seconds before continuing deletion...", sleepDuration.Seconds())
 			time.Sleep(sleepDuration)
 		}
 	}
 
-	log.Printf("成功清理表 %s 中的 %d 条记录", table.TableName, deleted)
+	log.Printf("Successfully cleaned %d records from table %s", deleted, table.TableName)
 	return nil
 }

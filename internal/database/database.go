@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Config 数据库配置
+// Config database configuration
 type Config struct {
 	Host            string
 	Port            int
@@ -20,60 +20,60 @@ type Config struct {
 	MaxIdleConns    int
 	MaxOpenConns    int
 	ConnMaxLifetime time.Duration
-	Mock            bool // 模拟模式，不实际连接数据库
+	Mock            bool // Mock mode, does not actually connect to the database
 }
 
-// DB 封装数据库连接
+// DB encapsulates database connection
 type DB struct {
 	*sqlx.DB
 	mock bool
 }
 
-// MockDB 是模拟数据库实现
+// MockDB is a mock database implementation
 type MockDB struct {
 	*sqlx.DB
 }
 
-// New 创建数据库连接
+// New creates a database connection
 func New(config Config) (*DB, error) {
-	// 如果是模拟模式，返回模拟数据库实现
+	// If in mock mode, return a mock database implementation
 	if config.Mock {
-		log.Printf("使用模拟模式，不实际连接数据库")
+		log.Printf("Using mock mode, not actually connecting to the database")
 		return &DB{nil, true}, nil
 	}
 
-	// 构建DSN连接字符串
+	// Build DSN connection string
 	var dsn string
 	if config.Password == "" {
-		// 空密码
+		// Empty password
 		dsn = fmt.Sprintf("%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
 			config.User, config.Host, config.Port, config.Name)
 	} else {
-		// 有密码
+		// With password
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
 			config.User, config.Password, config.Host, config.Port, config.Name)
 	}
 
 	db, err := sqlx.Connect("mysql", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("连接数据库失败: %w", err)
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// 设置连接池参数
+	// Set connection pool parameters
 	db.SetMaxIdleConns(config.MaxIdleConns)
 	db.SetMaxOpenConns(config.MaxOpenConns)
 	db.SetConnMaxLifetime(config.ConnMaxLifetime)
 
-	// 测试连接
+	// Test connection
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("测试数据库连接失败: %w", err)
+		return nil, fmt.Errorf("failed to test database connection: %w", err)
 	}
 
-	log.Printf("成功连接到数据库 %s:%d/%s", config.Host, config.Port, config.Name)
+	log.Printf("Successfully connected to database %s:%d/%s", config.Host, config.Port, config.Name)
 	return &DB{db, false}, nil
 }
 
-// Close 关闭数据库连接
+// Close closes the database connection
 func (db *DB) Close() error {
 	if db.mock {
 		return nil
@@ -81,14 +81,14 @@ func (db *DB) Close() error {
 	return db.DB.Close()
 }
 
-// Get 获取单条记录
+// Get retrieves a single record
 func (db *DB) Get(dest interface{}, query string, args ...interface{}) error {
 	if db.mock {
-		log.Printf("[模拟] 执行查询: %s, 参数: %v", query, args)
+		log.Printf("[Mock] Execute query: %s, args: %v", query, args)
 
-		// 模拟一些数据
+		// Mock some data
 		if intPtr, ok := dest.(*int); ok {
-			*intPtr = 1000 // 模拟记录数
+			*intPtr = 1000 // Mock record count
 			return nil
 		}
 
@@ -97,14 +97,14 @@ func (db *DB) Get(dest interface{}, query string, args ...interface{}) error {
 	return db.DB.Get(dest, query, args...)
 }
 
-// Select 获取多条记录
+// Select retrieves multiple records
 func (db *DB) Select(dest interface{}, query string, args ...interface{}) error {
 	if db.mock {
-		log.Printf("[模拟] 执行查询: %s, 参数: %v", query, args)
+		log.Printf("[Mock] Execute query: %s, args: %v", query, args)
 
-		// 如果查询主键，返回空结果
+		// If querying primary key, return empty result
 		if strSlice, ok := dest.(*[]string); ok {
-			*strSlice = []string{"id"} // 模拟主键
+			*strSlice = []string{"id"} // Mock primary key
 			return nil
 		}
 
@@ -113,35 +113,35 @@ func (db *DB) Select(dest interface{}, query string, args ...interface{}) error 
 	return db.DB.Select(dest, query, args...)
 }
 
-// Exec 执行SQL
+// Exec executes SQL
 func (db *DB) Exec(query string, args ...interface{}) (sql.Result, error) {
 	if db.mock {
-		log.Printf("[模拟] 执行SQL: %s, 参数: %v", query, args)
+		log.Printf("[Mock] Execute SQL: %s, args: %v", query, args)
 		return MockResult{1000}, nil
 	}
 	return db.DB.Exec(query, args...)
 }
 
-// Queryx 查询
+// Queryx queries
 func (db *DB) Queryx(query string, args ...interface{}) (*sqlx.Rows, error) {
 	if db.mock {
-		log.Printf("[模拟] 执行查询: %s, 参数: %v", query, args)
-		return nil, fmt.Errorf("模拟模式不支持Queryx")
+		log.Printf("[Mock] Execute query: %s, args: %v", query, args)
+		return nil, fmt.Errorf("mock mode does not support Queryx")
 	}
 	return db.DB.Queryx(query, args...)
 }
 
-// MockResult 是模拟结果
+// MockResult is a mock result
 type MockResult struct {
 	AffectedRows int64
 }
 
-// LastInsertId 实现Result接口
+// LastInsertId implements the Result interface
 func (r MockResult) LastInsertId() (int64, error) {
 	return 0, nil
 }
 
-// RowsAffected 实现Result接口
+// RowsAffected implements the Result interface
 func (r MockResult) RowsAffected() (int64, error) {
 	return r.AffectedRows, nil
 }

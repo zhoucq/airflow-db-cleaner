@@ -1,66 +1,66 @@
 # Airflow DB Cleaner
 
-一个用于清除Airflow数据库中历史数据的工具，以提高Airflow的性能。
+A tool for cleaning historical data in Airflow database to improve Airflow performance.
 
-## 功能
+## Features
 
-- 清理过期的DAG运行记录
-- 清理过期的任务实例
-- 清理过期的日志
-- 支持自定义清理策略和保留期
+- Clean expired DAG run records
+- Clean expired task instances
+- Clean expired logs
+- Support custom cleaning strategies and retention periods
 
-## 安装
+## Installation
 
 ```bash
 go get github.com/zhoucq/airflow-db-cleaner
 ```
 
-## 使用方法
+## Usage
 
-### 配置
+### Configuration
 
-在`config`目录中编辑配置文件，设置数据库连接和清理策略。
+Edit the configuration file in the `config` directory to set database connections and cleaning strategies.
 
-### 运行
+### Running
 
 ```bash
-# 使用默认配置运行
+# Run with default configuration
 ./bin/airflow-db-cleaner
 
-# 指定配置文件运行
+# Run with specified configuration file
 ./bin/airflow-db-cleaner --config /path/to/config.yaml
 ```
 
-## 构建
+## Build
 
-所有构建产物将输出到 `bin` 目录中：
+All build artifacts will be output to the `bin` directory:
 
 ```bash
-# 构建当前平台版本
+# Build for current platform
 make build
 
-# 构建 Linux x86_64 版本
+# Build for Linux x86_64
 make build-linux
 
-# 同时构建多个平台版本
+# Build for multiple platforms simultaneously
 make build-all
 
-# 带版本信息的构建
+# Build with version information
 make build-release
 
-# 清理所有构建产物
+# Clean all build artifacts
 make clean
 ```
 
-## 跨平台支持
+## Cross-platform Support
 
-本工具支持在不同平台上构建和运行：
+This tool supports building and running on different platforms:
 
-- 可以在 Mac ARM (M系列芯片) 上开发
-- 可以为 Linux x86_64 服务器构建二进制文件
-- 使用 `make build-linux` 命令可以直接生成 Linux 版本
-- 所有构建产物都会放在 `bin` 目录下
+- Can be developed on Mac ARM (M series chips)
+- Can build binaries for Linux x86_64 servers
+- Use `make build-linux` command to generate Linux version directly
+- All build artifacts are placed in the `bin` directory
 
-## 许可证
+## License
 
 MIT 

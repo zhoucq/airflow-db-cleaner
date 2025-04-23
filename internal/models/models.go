@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-// DagRun 表示DAG的一次运行
+// DagRun represents a DAG run
 type DagRun struct {
 	ID                     int64     `db:"id"`
 	DagID                  string    `db:"dag_id"`
@@ -24,7 +24,7 @@ type DagRun struct {
 	LogTemplateID          int64     `db:"log_template_id"`
 }
 
-// TaskInstance 表示任务实例
+// TaskInstance represents a task instance
 type TaskInstance struct {
 	TaskID             string    `db:"task_id"`
 	DagID              string    `db:"dag_id"`
@@ -57,7 +57,7 @@ type TaskInstance struct {
 	UpdatedAt          time.Time `db:"updated_at"`
 }
 
-// XCom 表示任务间通信的数据
+// XCom represents the data for communication between tasks
 type XCom struct {
 	DagID     string    `db:"dag_id"`
 	TaskID    string    `db:"task_id"`
@@ -69,7 +69,7 @@ type XCom struct {
 	DagRunID  int64     `db:"dag_run_id"`
 }
 
-// Log 表示日志记录
+// Log represents a log record
 type Log struct {
 	ID            int64     `db:"id"`
 	DagID         string    `db:"dag_id"`
@@ -82,7 +82,7 @@ type Log struct {
 	MapIndex      int       `db:"map_index"`
 }
 
-// Job 表示Airflow的作业记录
+// Job represents an Airflow job record
 type Job struct {
 	ID              int64     `db:"id"`
 	DagID           string    `db:"dag_id"`
@@ -96,14 +96,14 @@ type Job struct {
 	ExecutorClass   string    `db:"executor_class"`
 }
 
-// TableConfig 存储表的配置信息
+// TableConfig stores the configuration information of a table
 type TableConfig struct {
 	TableName     string
 	RetentionDays int
 	DateColumn    string
 }
 
-// Config 存储所有清理配置
+// Config stores all cleaning configurations
 type Config struct {
 	RetentionDays map[string]int
 	BatchSize     int
