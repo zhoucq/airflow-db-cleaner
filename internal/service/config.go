@@ -21,6 +21,7 @@ type AppConfig struct {
 		MaxIdleConns    int           `yaml:"max_idle_conns"`
 		MaxOpenConns    int           `yaml:"max_open_conns"`
 		ConnMaxLifetime time.Duration `yaml:"conn_max_lifetime"`
+		Mock            bool          `yaml:"mock"`
 	} `yaml:"database"`
 
 	Cleaner struct {
@@ -33,6 +34,7 @@ type AppConfig struct {
 		} `yaml:"retention_days"`
 		BatchSize           int           `yaml:"batch_size"`
 		SleepBetweenBatches time.Duration `yaml:"sleep_between_batches"`
+		SleepSeconds        int           `yaml:"sleep_seconds"`
 		DryRun              bool          `yaml:"dry_run"`
 		Verbose             bool          `yaml:"verbose"`
 	} `yaml:"cleaner"`
@@ -55,6 +57,14 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("解析配置文件失败: %w", err)
 	}
 
+	// 设置默认值
+	if config.Cleaner.BatchSize <= 0 {
+		config.Cleaner.BatchSize = 1000
+	}
+	if config.Cleaner.SleepSeconds <= 0 {
+		config.Cleaner.SleepSeconds = 5
+	}
+
 	return &config, nil
 }
 
@@ -69,6 +79,7 @@ func (c *AppConfig) GetDatabaseConfig() database.Config {
 		MaxIdleConns:    c.Database.MaxIdleConns,
 		MaxOpenConns:    c.Database.MaxOpenConns,
 		ConnMaxLifetime: c.Database.ConnMaxLifetime,
+		Mock:            c.Database.Mock,
 	}
 }
 
@@ -82,8 +93,9 @@ func (c *AppConfig) GetCleanerConfig() models.Config {
 			"log":           c.Cleaner.RetentionDays.Log,
 			"job":           c.Cleaner.RetentionDays.Job,
 		},
-		BatchSize: c.Cleaner.BatchSize,
-		DryRun:    c.Cleaner.DryRun,
-		Verbose:   c.Cleaner.Verbose,
+		BatchSize:    c.Cleaner.BatchSize,
+		DryRun:       c.Cleaner.DryRun,
+		Verbose:      c.Cleaner.Verbose,
+		SleepSeconds: c.Cleaner.SleepSeconds,
 	}
 }
