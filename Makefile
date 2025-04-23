@@ -2,37 +2,43 @@
 
 # 二进制文件名
 BINARY=airflow-db-cleaner
+# 输出目录
+OUTPUT_DIR=bin
+
+# 确保输出目录存在
+ensure_dir:
+	mkdir -p $(OUTPUT_DIR)
 
 # 构建目标
-build:
-	go build -o $(BINARY) ./cmd/airflow-db-cleaner
+build: ensure_dir
+	go build -o $(OUTPUT_DIR)/$(BINARY) ./cmd/airflow-db-cleaner
 
 # 交叉编译Linux x86_64版本
-build-linux:
-	GOOS=linux GOARCH=amd64 go build -o $(BINARY)-linux-amd64 ./cmd/airflow-db-cleaner
+build-linux: ensure_dir
+	GOOS=linux GOARCH=amd64 go build -o $(OUTPUT_DIR)/$(BINARY)-linux-amd64 ./cmd/airflow-db-cleaner
 
 # 带版本信息的构建
-build-release:
-	go build -ldflags "-X main.version=$$(git describe --tags --always)" -o $(BINARY) ./cmd/airflow-db-cleaner
+build-release: ensure_dir
+	go build -ldflags "-X main.version=$$(git describe --tags --always)" -o $(OUTPUT_DIR)/$(BINARY) ./cmd/airflow-db-cleaner
 
 # 带版本信息的Linux x86_64构建
-build-release-linux:
-	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$$(git describe --tags --always)" -o $(BINARY)-linux-amd64 ./cmd/airflow-db-cleaner
+build-release-linux: ensure_dir
+	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$$(git describe --tags --always)" -o $(OUTPUT_DIR)/$(BINARY)-linux-amd64 ./cmd/airflow-db-cleaner
 
 # 构建多平台版本
 build-all: build build-linux
 
 # 清理构建产物
 clean:
-	rm -f $(BINARY) $(BINARY)-linux-amd64
+	rm -rf $(OUTPUT_DIR)
 
 # 运行程序（默认配置）
 run: build
-	./$(BINARY)
+	$(OUTPUT_DIR)/$(BINARY)
 
 # 运行程序（指定配置文件）
 run-config: build
-	./$(BINARY) --config $(CONFIG)
+	$(OUTPUT_DIR)/$(BINARY) --config $(CONFIG)
 
 # 测试
 test:

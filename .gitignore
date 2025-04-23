@@ -6,6 +6,9 @@ airflow-db-cleaner
 *.so
 *.dylib
 
+# 构建目录
+/bin/
+
 # 测试二进制文件
 *.test
 
