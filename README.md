@@ -25,13 +25,15 @@ go get github.com/zhoucq/airflow-db-cleaner
 
 ```bash
 # 使用默认配置运行
-./airflow-db-cleaner
+./bin/airflow-db-cleaner
 
 # 指定配置文件运行
-./airflow-db-cleaner --config /path/to/config.yaml
+./bin/airflow-db-cleaner --config /path/to/config.yaml
 ```
 
 ## 构建
+
+所有构建产物将输出到 `bin` 目录中：
 
 ```bash
 # 构建当前平台版本
@@ -45,6 +47,9 @@ make build-all
 
 # 带版本信息的构建
 make build-release
+
+# 清理所有构建产物
+make clean
 ```
 
 ## 跨平台支持
@@ -54,6 +59,7 @@ make build-release
 - 可以在 Mac ARM (M系列芯片) 上开发
 - 可以为 Linux x86_64 服务器构建二进制文件
 - 使用 `make build-linux` 命令可以直接生成 Linux 版本
+- 所有构建产物都会放在 `bin` 目录下
 
 ## 许可证
 
