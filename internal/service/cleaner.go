@@ -93,7 +93,8 @@ func (c *Cleaner) cleanTable(table models.TableConfig) error {
 	// Delete data in batches
 	var deleted int
 	batchSize := c.config.BatchSize
-	sleepDuration := time.Duration(c.config.SleepSeconds) * time.Second
+	// Convert float64 seconds to time.Duration (nanoseconds)
+	sleepDuration := time.Duration(c.config.SleepSeconds * float64(time.Second))
 
 	// Use simple batch deletion method
 	for deleted < count {
@@ -118,7 +119,7 @@ func (c *Cleaner) cleanTable(table models.TableConfig) error {
 
 		// If not finished deleting, sleep to reduce database pressure
 		if deleted < count {
-			log.Printf("Sleeping for %v seconds before continuing deletion...", sleepDuration.Seconds())
+			log.Printf("Sleeping for %.3f seconds before continuing deletion...", c.config.SleepSeconds)
 			time.Sleep(sleepDuration)
 		}
 	}

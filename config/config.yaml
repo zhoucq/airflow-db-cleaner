@@ -15,15 +15,15 @@ database:
 cleaner:
   # Retention days, records older than these days will be cleaned
   retention_days:
-    dag_run: 14        # DAG run records retained for 14 days
-    task_instance: 14  # Task instances retained for 14 days
-    xcom: 14           # XCom data retained for 14 days
-    log: 7             # Logs retained for 7 days
-    job: 7             # Job records retained for 7 days
+    dag_run: 30        # DAG run records retained for 30 days
+    task_instance: 30  # Task instances retained for 30 days
+    xcom: 30           # XCom data retained for 30 days
+    log: 30            # Logs retained for 30 days
+    job: 30            # Job records retained for 30 days
     
   # Batch processing configuration
   batch_size: 1000     # Number of records processed per batch
-  sleep_seconds: 5     # Interval time between batches (seconds), to avoid excessive pressure on the database
+  sleep_seconds: 0.5   # Interval time between batches (supports decimal values for milliseconds, e.g., 0.5 = 500ms)
   
   # Whether to perform actual delete operations, set to false to only display the number of records to be deleted
   dry_run: false

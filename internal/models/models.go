@@ -109,5 +109,5 @@ type Config struct {
 	BatchSize     int
 	DryRun        bool
 	Verbose       bool
-	SleepSeconds  int
+	SleepSeconds  float64
 }

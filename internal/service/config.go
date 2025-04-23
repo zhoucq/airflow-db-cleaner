@@ -34,7 +34,7 @@ type AppConfig struct {
 		} `yaml:"retention_days"`
 		BatchSize           int           `yaml:"batch_size"`
 		SleepBetweenBatches time.Duration `yaml:"sleep_between_batches"`
-		SleepSeconds        int           `yaml:"sleep_seconds"`
+		SleepSeconds        float64       `yaml:"sleep_seconds"`
 		DryRun              bool          `yaml:"dry_run"`
 		Verbose             bool          `yaml:"verbose"`
 	} `yaml:"cleaner"`
@@ -62,7 +62,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		config.Cleaner.BatchSize = 1000
 	}
 	if config.Cleaner.SleepSeconds <= 0 {
-		config.Cleaner.SleepSeconds = 5
+		config.Cleaner.SleepSeconds = 5.0
 	}
 
 	return &config, nil
