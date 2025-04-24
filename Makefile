@@ -75,9 +75,9 @@ release-all: ensure_release_dir
 			GOOS=$$os GOARCH=$$arch go build -o $(RELEASE_DIR)/$(BINARY)-$$os-$$arch/$(BINARY) .; \
 			cp $(CONFIG_FILE) $(RELEASE_DIR)/$(BINARY)-$$os-$$arch/config/; \
 			if [ "$$os" = "windows" ]; then \
-				cd $(RELEASE_DIR) && zip -r $(BINARY)-$$os-$$arch.zip $(BINARY)-$$os-$$arch; \
+				(cd $(RELEASE_DIR) && zip -r $(BINARY)-$$os-$$arch.zip $(BINARY)-$$os-$$arch); \
 			else \
-				cd $(RELEASE_DIR) && tar -czf $(BINARY)-$$os-$$arch.tar.gz $(BINARY)-$$os-$$arch; \
+				(cd $(RELEASE_DIR) && tar -czf $(BINARY)-$$os-$$arch.tar.gz $(BINARY)-$$os-$$arch); \
 			fi; \
 			echo "Release package created for $$os/$$arch"; \
 		done; \
