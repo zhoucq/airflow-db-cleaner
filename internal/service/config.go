@@ -37,6 +37,7 @@ type AppConfig struct {
 		SleepSeconds        float64       `yaml:"sleep_seconds"`
 		DryRun              bool          `yaml:"dry_run"`
 		Verbose             bool          `yaml:"verbose"`
+		UsePrimaryKeyDelete bool          `yaml:"use_primary_key_delete"`
 	} `yaml:"cleaner"`
 
 	Log struct {
@@ -93,9 +94,10 @@ func (c *AppConfig) GetCleanerConfig() models.Config {
 			"log":           c.Cleaner.RetentionDays.Log,
 			"job":           c.Cleaner.RetentionDays.Job,
 		},
-		BatchSize:    c.Cleaner.BatchSize,
-		DryRun:       c.Cleaner.DryRun,
-		Verbose:      c.Cleaner.Verbose,
-		SleepSeconds: c.Cleaner.SleepSeconds,
+		BatchSize:           c.Cleaner.BatchSize,
+		DryRun:              c.Cleaner.DryRun,
+		Verbose:             c.Cleaner.Verbose,
+		SleepSeconds:        c.Cleaner.SleepSeconds,
+		UsePrimaryKeyDelete: c.Cleaner.UsePrimaryKeyDelete,
 	}
 }

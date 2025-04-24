@@ -101,6 +101,7 @@ type TableConfig struct {
 	TableName     string
 	RetentionDays int
 	DateColumn    string
+	PrimaryKey    string // Primary key column name
 }
 
 // Config stores all cleaning configurations
@@ -110,4 +111,8 @@ type Config struct {
 	DryRun        bool
 	Verbose       bool
 	SleepSeconds  float64
+	// Determines which deletion method to use
+	// When true, uses primary key-based deletion (slower first query, faster deletes)
+	// When false, uses direct DELETE...LIMIT method (simpler but may be slower for large tables)
+	UsePrimaryKeyDelete bool
 }

@@ -30,6 +30,11 @@ cleaner:
   
   # Whether to enable detailed logs
   verbose: false
+  
+  # Deletion method optimization
+  # When true: Use primary key-based deletion (often faster for large tables)
+  # When false: Use direct DELETE...WHERE...LIMIT method (simpler but can be slower)
+  use_primary_key_delete: true
 
 # Log configuration
 log:
