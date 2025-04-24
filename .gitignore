@@ -1,5 +1,5 @@
 # 二进制文件
-airflow-db-cleaner
+/airflow-db-cleaner
 *.exe
 *.exe~
 *.dll
