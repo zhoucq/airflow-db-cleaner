@@ -1,5 +1,8 @@
 # Airflow DB Cleaner
 
+[![CI](https://github.com/zhoucq/airflow-db-cleaner/actions/workflows/ci.yml/badge.svg)](https://github.com/zhoucq/airflow-db-cleaner/actions/workflows/ci.yml)
+[![Release](https://github.com/zhoucq/airflow-db-cleaner/actions/workflows/release.yml/badge.svg)](https://github.com/zhoucq/airflow-db-cleaner/actions/workflows/release.yml)
+
 A tool for cleaning historical data in Airflow database to improve Airflow performance.
 
 ## Features
@@ -51,6 +54,31 @@ make build-release
 # Clean all build artifacts
 make clean
 ```
+
+## CI/CD
+
+### Continuous Integration
+
+This project uses GitHub Actions for continuous integration. The CI workflow runs on every push to the main branch and on pull requests:
+
+- Runs all tests to ensure code quality
+- Builds the project to verify it compiles correctly
+
+### Releases
+
+This project uses GitHub Actions to automatically create releases when a new tag is pushed.
+
+To create a new release:
+
+```bash
+# Tag a new version
+git tag v1.0.0
+
+# Push the tag to GitHub
+git push origin v1.0.0
+```
+
+This will trigger the release workflow which builds the project for all supported platforms and creates a GitHub release with the artifacts.
 
 ## Cross-platform Support
 
